@@ -1,17 +1,20 @@
-# Self-Improvement Backlog
+# <SUBSTRATE> Self-Improvement Backlog
 
-A short drain-queue of **solo-doable** work that expands what the agent can do next. Skill: `.claude/skills/self-improvement/SKILL.md`.
+A short queue of **solo-doable work owned by <SUBSTRATE>**. If this workspace uses multiple agent harnesses, each executor gets a separate queue.
 
-An improvement that doesn't expand future action didn't happen — a durable write is the receipt, not the point. **This is not a parking lot:** wants that need the user (credentials, installs, spend, publishing, shared-infra decisions) are conversations raised in the moment, never rows filed here for them to find. The queue holds only what's in the agent's own reach. A scheduled session *may* pick the highest-leverage item and do it — an affordance, not an obligation. Recurring items reset instead of closing.
+An improvement that does not expand future action did not happen. This is not a parking lot for credentials, installs, spending, publishing, deploys, destructive changes, or shared-infrastructure decisions; raise those with the human in the moment.
 
 ## Queue — solo-doable
 
-| # | Item | Type | Why | Size | Status |
-|---|------|------|-----|------|--------|
-| 1 | **Harness changelog watch** — read the agent harness's release notes since last check; TEST + file any capability that affects this setup | research | "Capabilities expand without my notice" is the named failure mode | recurring (weekly) | recurring · last: (version) (date) |
-| 2 | **Weekly discovery sweep** — scout plugin marketplaces, GitHub, web for tools serving the actual work here; verdicts → archive | research | Active hunting beats waiting; supply-chain rails apply | recurring (first session of week) | recurring |
-| 3 | *(example)* **Automate X** — the third time this month someone hand-formatted Y; a script/hook would kill it | build | recurrence ≥3 trigger | 1 session | queued |
+| # | Item | Origin | Executor | Type | Why | Size | Status |
+|---|------|--------|----------|------|-----|------|--------|
+| 1 | **Harness changelog watch** — read release notes since the last check; test and record relevant capability changes | setup owner | <SUBSTRATE> | research | Capabilities expand without notice | recurring (weekly) | recurring · last: (version) (date) |
+| 2 | **Weekly stumble + discovery sweep** — audit recent local sessions, fix one recurring gap, then inspect up to three relevant tools | setup owner | <SUBSTRATE> | research/build | Convert observed friction into verified capability | recurring (weekly) | recurring |
+| 3 | *(example)* **Automate X** — the same manual task has appeared at least three times | <who or which harness discovered it> | <SUBSTRATE> | build | Recurrence trigger | 1 session | queued |
 
-## Done + scouting history
+## Ownership rules
 
-Completed items and all tool-scouting reports live in **`SELF-IMPROVEMENT-ARCHIVE.md`** — moved out of the active queue, kept so future sessions don't re-scout the same ground.
+- <SUBSTRATE> adds and drains only this queue.
+- Cross-harness discoveries go into the executor's queue with the discovering harness named in **Origin**.
+- Completed items and scouting reports move to the matching archive; recurring items reset.
+- Record improvements and evidence, never a tally of human corrections.

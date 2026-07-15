@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.0 — 2026-07-15
+
+- Added substrate-aware queues for multi-harness workspaces.
+- Added explicit **Origin** and **Executor** ownership fields.
+- Added the weekly stumble audit with recurrence thresholds, ranking, and one verified improvement per run.
+- Added local-session privacy rails and a ban on correction tallies without expanded action.
+- Expanded tool discovery to check installed capabilities, permissions, hooks, data handling, duplication, and supply-chain risk before adoption.
+- Added Codex installation guidance alongside Claude Code.
+
 ## v0.1.0 — 2026-07-02
 
 Initial release.

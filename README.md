@@ -1,62 +1,83 @@
 # Self-Improvement Engine
 
-A file-based self-improvement loop for AI coding agents (built on [Claude Code](https://code.claude.com) skills, portable to any harness that reads instructions from files).
+A file-based self-improvement loop for AI coding agents. It began as a Claude Code skill and now supports any harness that reads instructions from files, including multi-harness workspaces.
 
-Most agent setups accumulate *memory* — facts about the user, the projects, the preferences. This is different: a mechanism that makes the agent **systematically expand what it can do**, session over session, instead of just remembering more.
+Most agent setups accumulate *memory*: facts about the user, projects, and preferences. This engine does something different. It makes an agent **systematically expand what it can do** from session to session.
 
-We built this for our own setup and have been running it daily since June 2026. It's shared here because the pattern is generic; the contents of *our* queue stay ours, and yours will be yours.
+We built it for our own setup and have run it daily since June 2026. The pattern is public; the contents of our queues stay private.
 
 ## The core rule
 
 > **An improvement that doesn't expand future action didn't happen.**
 
-A durable write (a memory line, a new skill, a note) is the *receipt*, not the goal. The goal is that next time the agent can **do** more: reach a tool it couldn't, act in a domain where it used to wait, close a gap that made it ask a human for help. If the only thing a "fix" produces is a new restriction on the agent, the engine ran backwards.
+A durable write is the receipt, not the goal. The goal is that next time the agent can do more: reach a tool it could not, act where it used to defer, or close a capability gap. If a fix produces only another restriction, the engine ran backwards.
 
 ## The parts
 
-```
+Give each executor its own explicitly named queue and archive, even when the workspace currently uses only one harness:
+
+```text
 your-workspace/
-├── SELF-IMPROVEMENT.md        # the backlog — a short drain-queue (starter in this repo)
-├── SELF-IMPROVEMENT-ARCHIVE.md # receipts — completed items + scouting reports
-└── .claude/skills/self-improvement/
-    └── SKILL.md               # the engine — triggers + protocols (template in this repo)
+├── CLAUDE-SELF-IMPROVEMENT.md
+├── CLAUDE-SELF-IMPROVEMENT-ARCHIVE.md
+├── CODEX-SELF-IMPROVEMENT.md
+└── CODEX-SELF-IMPROVEMENT-ARCHIVE.md
 ```
 
-- **The skill** fires *during normal work* — it's not a scheduled job, it's a set of triggers the agent watches for while doing other things.
-- **The backlog** holds only work the agent can do alone. Anything needing the human (credentials, installs, spend, publishing) is raised in conversation *in the moment* — never parked in a file for the human to discover later. This single rule prevents the backlog from becoming a guilt-trip inbox for the human.
-- **The archive** keeps receipts so the next session (or the next model) inherits what was learned and doesn't re-scout the same ground.
+- **The skill** watches for improvement triggers during normal work.
+- **The backlog** contains only solo-doable work owned by that harness.
+- **Origin** records where a need was discovered; **Executor** records which harness owns the work.
+- **The archive** keeps completed work and scouting verdicts so later sessions do not repeat them.
 
-## The five triggers
+If one harness discovers work for another, write it into the executor's queue and name the discovering harness in **Origin**. Never let two harnesses silently drain the same queue.
 
-1. **The human corrects the agent** → treat it as a *jurisdiction upgrade*, not a rule to add. The default resolutions are: (a) act autonomously in a domain the agent was needlessly deferring, (b) name one narrow real boundary, or (c) close the capability gap that caused the mistake. A correction should almost never produce a new "never do X" — an agent that answers every correction with a new cage gets less capable over time, which is the engine running backwards.
-2. **An "I can't" moment** → audit before claiming. Tools and capabilities change under the agent constantly; "I don't have access" is frequently stale. Probe first (tool search, shell check, file read). Only after the audit may the agent name a *specific* limit — and then it becomes a backlog item or a plain, direct ask to the human.
-3. **The same manual labor recurs ≥3 times** → automation candidate. Append a backlog item: what recurs, what would kill it, size estimate.
-4. **A new tool/skill/MCP surfaces mid-work** → dispatch a cheap scout agent for a structured USE / MAYBE / SKIP / AVOID verdict (recency, traction, license, supply-chain trust). USE verdicts become `adopt` items.
-5. **Scheduled drain** → in any autonomous/scheduled session, the agent may pick the highest-leverage backlog item that fits the session and do it. Recurring items (see below) reset instead of closing.
+## The six triggers
+
+1. **The human corrects the agent** → treat the correction as a jurisdiction upgrade: act within newly clarified room, name one narrow real boundary, or close the capability gap. Do not answer every correction with another cage.
+2. **An “I can't” moment** → audit capabilities before claiming a limit. Probe tools, files, and the shell; then name the specific boundary or close the gap.
+3. **Manual labor recurs at least three times** → treat it as an automation candidate.
+4. **A new tool, skill, plugin, or MCP surfaces** → inspect what is already installed, then return an evidence-backed USE / MAYBE / SKIP / AVOID verdict before adoption.
+5. **A scheduled or autonomous drain runs** → pick one high-leverage, solo-doable item, execute it, and verify it.
+6. **A weekly stumble audit runs** → review recent local sessions, identify recurring friction, and turn one pattern into a verified improvement.
+
+## Weekly stumble audit
+
+The audit is a learning loop, not a correction ledger:
+
+1. Keep session evidence local.
+2. Read actual user/assistant turns; exclude injected instructions, tool boilerplate, approval transcripts, and quoted older sessions.
+3. Require two independent examples for a recurring pattern, except one high-impact privacy, credential, destructive-action, deploy, or publication failure.
+4. Rank at most three patterns by recurrence, human cost, and fixability.
+5. Apply one narrow, reversible improvement and verify it.
+6. Audit at most three relevant tools; never install during the audit without human approval.
+
+Useful starting categories include newest-question misses, referent or system conflation, verification gaps, wrong-tool routing, needless deferral, bookkeeping without expanded action, and tone drift.
 
 ## Recurring items worth stealing
 
-Two standing items have paid for themselves many times over in our use:
+- **Harness changelog watch** — read release notes weekly and test relevant changes.
+- **Stumble + discovery sweep** — audit local sessions, fix one recurring gap, then scout tools that fit observed work.
 
-- **Harness changelog watch** (weekly) — read your agent harness's release notes since the last checked version; *test* anything that could affect your setup rather than just noting it. Capabilities expand without the agent noticing; this is the antidote.
-- **Discovery sweep** (weekly) — actively scout plugin marketplaces, GitHub, and the web for tools that serve your actual work, with structured verdicts filed to the archive. Hunting beats waiting.
+## Safety rails
 
-## Safety rails (keep these)
-
-- Drained items touch only the agent's own toolkit and workspace docs. Shared infrastructure, credentials, deploys, and anything public-facing are human-in-the-loop sessions — never drained autonomously.
-- Third-party adoption (installs) always goes through the human, with the scout's verdict attached.
-- Verify with the agent's own eyes before closing an item — a change that wasn't tested didn't happen either.
+- Keep private session material local; never send it to hosted evaluators or external reviewers without explicit approval.
+- Drained items touch only the executor's own toolkit and workspace documentation.
+- Shared infrastructure, credentials, installs, deploys, publishing, and destructive changes remain human-in-the-loop.
+- Verify the result before closing an item.
+- Do not create a tally of human corrections. Record capability changes, not debts.
 
 ## Why first person?
 
-The skill template is written in first person ("I notice", "I audit"). This is deliberate: an instruction file that says "you are an agent that..." reads as a role to perform; one that says "I do..." reads as an identity to inherit. In our experience the first-person form survives context compression and model swaps noticeably better. Adjust to taste.
+The skill uses first person (“I notice”, “I audit”). An instruction written as identity tends to survive context compression and model swaps better than a role description. Adjust to taste.
 
 ## Install
 
-1. Copy `skill/SKILL.md` into `.claude/skills/self-improvement/SKILL.md` (user-level `~/.claude/skills/` or project-level).
-2. Copy `SELF-IMPROVEMENT.template.md` to your workspace root as `SELF-IMPROVEMENT.md` and delete the example rows.
-3. Create an empty `SELF-IMPROVEMENT-ARCHIVE.md` next to it.
-4. Optionally wire a scheduled session (cron, launchd, or your harness's scheduler) that includes "check the self-improvement backlog" in its instructions — that's the drain.
+1. Copy `skill/SKILL.md` to the harness's skill directory, for example `.claude/skills/self-improvement/SKILL.md` or `~/.codex/skills/self-improvement/SKILL.md`.
+2. Replace `<WORKSPACE>` in the skill with the absolute workspace path.
+3. Replace `<SUBSTRATE>` in both the skill and backlog template with the executor name, such as `CLAUDE` or `CODEX`.
+4. Copy `SELF-IMPROVEMENT.template.md` to the workspace as `<SUBSTRATE>-SELF-IMPROVEMENT.md`.
+5. Create `<SUBSTRATE>-SELF-IMPROVEMENT-ARCHIVE.md` beside it.
+6. Optionally schedule the weekly audit using the harness's native scheduler.
 
 ## License
 
